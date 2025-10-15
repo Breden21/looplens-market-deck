@@ -2,12 +2,22 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { MarketCard } from "@/components/MarketCard";
 import { BetModal } from "@/components/BetModal";
+import { ActiveBets } from "@/components/ActiveBets";
 
 interface Market {
   id: string;
   title: string;
   aiConfidence: number;
   endsAt: Date;
+}
+
+interface Bet {
+  marketId: string;
+  marketTitle: string;
+  amount: number;
+  betWith: boolean;
+  timestamp: Date;
+  aiConfidence: number;
 }
 
 const mockMarkets: Market[] = [
@@ -46,6 +56,7 @@ const mockMarkets: Market[] = [
 const Index = () => {
   const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
   const [betWith, setBetWith] = useState(true);
+  const [activeBets, setActiveBets] = useState<Bet[]>([]);
 
   const handleBet = (marketId: string, betWithAI: boolean) => {
     const market = mockMarkets.find((m) => m.id === marketId);
@@ -55,30 +66,48 @@ const Index = () => {
     }
   };
 
+  const handleBetPlaced = (bet: { marketId: string; amount: number; betWith: boolean; timestamp: Date }) => {
+    const market = mockMarkets.find((m) => m.id === bet.marketId);
+    if (market) {
+      setActiveBets((prev) => [
+        {
+          ...bet,
+          marketTitle: market.title,
+          aiConfidence: market.aiConfidence,
+        },
+        ...prev,
+      ]);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
 
       <main className="container mx-auto px-4 py-8">
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-bold text-foreground">Live Markets</h2>
-            <p className="text-muted-foreground">
-              AI-powered prediction markets on Base. Bet with or against the AI.
-            </p>
-          </div>
+        <div className="space-y-8">
+          <ActiveBets bets={activeBets} />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockMarkets.map((market) => (
-              <MarketCard
-                key={market.id}
-                id={market.id}
-                title={market.title}
-                aiConfidence={market.aiConfidence}
-                endsAt={market.endsAt}
-                onBet={handleBet}
-              />
-            ))}
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold text-foreground">Live Markets</h2>
+              <p className="text-muted-foreground">
+                AI-powered prediction markets on Base. Bet with or against the AI.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {mockMarkets.map((market) => (
+                <MarketCard
+                  key={market.id}
+                  id={market.id}
+                  title={market.title}
+                  aiConfidence={market.aiConfidence}
+                  endsAt={market.endsAt}
+                  onBet={handleBet}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </main>
@@ -87,9 +116,11 @@ const Index = () => {
         <BetModal
           isOpen={!!selectedMarket}
           onClose={() => setSelectedMarket(null)}
+          marketId={selectedMarket.id}
           marketTitle={selectedMarket.title}
           betWith={betWith}
           aiConfidence={selectedMarket.aiConfidence}
+          onBetPlaced={handleBetPlaced}
         />
       )}
     </div>
