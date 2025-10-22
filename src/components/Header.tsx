@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Wallet } from "lucide-react";
+import WalletConnect from "@/components/WalletConnect";
 
 export const Header = () => {
   return (
@@ -15,10 +14,7 @@ export const Header = () => {
           </div>
         </div>
 
-        <Button variant="default" className="gap-2">
-          <Wallet className="w-4 h-4" />
-          Connect Wallet
-        </Button>
+        <WalletConnect />
       </div>
     </header>
   );

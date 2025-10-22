@@ -40,8 +40,7 @@ const Index = () => {
     const interval = setInterval(() => {
       const newMarket = generateMarket();
       setMarkets((prev) => [...prev, newMarket]);
-    }, 60000); // 60 seconds
-
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -54,14 +53,10 @@ const Index = () => {
         const expired: Market[] = [];
 
         prev.forEach((market) => {
-          if (market.endsAt <= now) {
-            expired.push(market);
-          } else {
-            active.push(market);
-          }
+          if (market.endsAt <= now) expired.push(market);
+          else active.push(market);
         });
 
-        // Resolve expired markets
         if (expired.length > 0) {
           const newResolved = expired.map((market) => resolveMarket(market));
           setResolvedMarkets((prevResolved) => [...newResolved, ...prevResolved]);
@@ -69,7 +64,7 @@ const Index = () => {
 
         return active;
       });
-    }, 1000); // Check every second
+    }, 1000);
 
     return () => clearInterval(interval);
   }, []);
@@ -96,7 +91,6 @@ const Index = () => {
     }
   };
 
-  // Calculate stats
   const totalVolume = resolvedMarkets.reduce((sum, m) => sum + m.totalVolume, 0);
   const aiWins = resolvedMarkets.filter((m) => m.aiWon).length;
   const aiWinRate = resolvedMarkets.length > 0 ? (aiWins / resolvedMarkets.length) * 100 : 73;
@@ -109,14 +103,12 @@ const Index = () => {
       <Header />
 
       <main className="container mx-auto px-4 py-8 space-y-8">
-        {/* Summary Stats */}
         <SummaryStats 
           aiWinRate={aiWinRate} 
           activeMarkets={markets.length} 
           totalVolume={totalVolume}
         />
 
-        {/* View Toggle */}
         <div className="flex gap-3">
           <Button
             variant={activeView === "markets" ? "default" : "outline"}
@@ -136,7 +128,6 @@ const Index = () => {
           </Button>
         </div>
 
-        {/* Content based on active view */}
         <AnimatePresence mode="wait">
           {activeView === "markets" ? (
             <motion.div
