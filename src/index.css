@@ -88,11 +88,46 @@ All colors MUST be HSL.
     }
   }
 
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes progress-spin {
+    0% {
+      stroke-dasharray: 0 100;
+    }
+  }
+
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
 
   .animate-pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .group:hover .shimmer {
+    animation: shimmer 1.5s ease-in-out;
+  }
+
+  .card-glow {
+    @apply shadow-[0_0_15px_rgba(168,85,247,0.15)] border-primary/20;
+  }
+
+  .card-glow-hover {
+    @apply hover:shadow-[0_0_30px_rgba(168,85,247,0.4),0_0_60px_rgba(34,211,238,0.2)] hover:border-primary/50 hover:-translate-y-2;
+  }
+
+  .button-glow-green {
+    @apply shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.6)];
+  }
+
+  .button-glow-red {
+    @apply shadow-[0_0_20px_rgba(239,68,68,0.4)] hover:shadow-[0_0_30px_rgba(239,68,68,0.6)];
   }
 }
