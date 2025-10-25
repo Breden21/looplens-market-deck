@@ -125,15 +125,6 @@ const Index = () => {
         >
           AI-powered prediction markets on Base. Bet with or against the AI.
         </motion.p>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <Button variant="glow" size="lg" className="text-lg px-8 py-6">
-            Start Trading
-          </Button>
-        </motion.div>
       </section>
 
       <main className="container mx-auto px-4 py-8 space-y-8 relative z-10">
