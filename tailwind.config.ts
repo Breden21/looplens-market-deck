@@ -92,12 +92,66 @@ export default {
           "0%, 100%": { boxShadow: "0 0 20px hsl(270 100% 65% / 0.3)" },
           "50%": { boxShadow: "0 0 40px hsl(270 100% 65% / 0.6), 0 0 60px hsl(180 100% 60% / 0.4)" },
         },
+        "toast-slide-in": {
+          "0%": {
+            transform: "translateY(-100%) scale(0.9)",
+            opacity: "0",
+          },
+          "60%": {
+            transform: "translateY(10px) scale(1.02)",
+          },
+          "100%": {
+            transform: "translateY(0) scale(1)",
+            opacity: "1",
+          },
+        },
+        shimmer: {
+          "0%": {
+            transform: "translateX(-100%)",
+          },
+          "100%": {
+            transform: "translateX(100%)",
+          },
+        },
+        "skeleton-shimmer": {
+          "0%": {
+            backgroundPosition: "-1000px 0",
+          },
+          "100%": {
+            backgroundPosition: "1000px 0",
+          },
+        },
+        ripple: {
+          "0%": {
+            transform: "scale(0)",
+            opacity: "1",
+          },
+          "100%": {
+            transform: "scale(4)",
+            opacity: "0",
+          },
+        },
+        "pulse-ring": {
+          "0%": {
+            transform: "scale(0.8)",
+            opacity: "1",
+          },
+          "100%": {
+            transform: "scale(1.2)",
+            opacity: "0",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         float: "float 6s ease-in-out infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "toast-slide-in": "toast-slide-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+        shimmer: "shimmer 1.5s ease-in-out",
+        "skeleton-shimmer": "skeleton-shimmer 2s infinite linear",
+        ripple: "ripple 0.6s ease-out",
+        "pulse-ring": "pulse-ring 2s ease-out infinite",
       },
     },
   },

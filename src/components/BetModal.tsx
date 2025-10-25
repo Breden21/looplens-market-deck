@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TrendingUp, TrendingDown, Loader2, Zap, Sparkles } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useRipple } from "@/hooks/useRipple";
 
 const betAmountSchema = z.object({
   amount: z
@@ -47,6 +48,7 @@ export const BetModal = ({
   const [error, setError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const { createRipple } = useRipple();
 
   const quickSelectAmounts = [10, 50, 100, 500];
 
@@ -113,7 +115,8 @@ export const BetModal = ({
     }, 2000);
   };
 
-  const handleQuickSelect = (value: number) => {
+  const handleQuickSelect = (value: number, e: React.MouseEvent<HTMLButtonElement>) => {
+    createRipple(e);
     validateAmount(value.toString());
   };
 
@@ -216,9 +219,9 @@ export const BetModal = ({
                         key={value}
                         variant="outline"
                         size="sm"
-                        onClick={() => handleQuickSelect(value)}
+                        onClick={(e) => handleQuickSelect(value, e)}
                         disabled={isProcessing}
-                        className="quick-select-btn hover:border-primary hover:bg-primary/10 font-semibold"
+                        className="quick-select-btn ripple-container hover:border-primary hover:bg-primary/10 font-semibold"
                       >
                         {value}
                       </Button>
@@ -265,10 +268,13 @@ export const BetModal = ({
                     Cancel
                   </Button>
                   <Button
-                    onClick={handlePlaceBet}
+                    onClick={(e) => {
+                      createRipple(e);
+                      handlePlaceBet();
+                    }}
                     disabled={!amount || !!error || isProcessing}
                     variant="glow"
-                    className="flex-1 gap-2 text-lg h-12"
+                    className="flex-1 gap-2 text-lg h-12 ripple-container"
                   >
                     {isProcessing && <Loader2 className="w-5 h-5 animate-spin" />}
                     {isProcessing ? "Processing..." : "Place Bet"}
