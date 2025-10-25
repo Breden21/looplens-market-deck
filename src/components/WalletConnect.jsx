@@ -1,11 +1,17 @@
 import { useAccount, useConnect, useDisconnect, useSwitchChain, useBalance } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains';
 import { Button } from '@/components/ui/button';
-import { Wallet, AlertCircle, CheckCircle } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Wallet, AlertCircle, CheckCircle, Zap, ChevronDown } from 'lucide-react';
 import { CONTRACTS } from '@/config/contracts';
 
 export default function WalletConnect() {
-  const { address, isConnected, chain } = useAccount();
+  const { address, isConnected, chain, connector } = useAccount();
   const { connectors, connect, isPending } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain } = useSwitchChain();
@@ -21,14 +27,12 @@ export default function WalletConnect() {
     token: CONTRACTS.usdc,
   });
 
-  // Check if on wrong network
+  // Check if using Smart Wallet
+  const isSmartWallet = connector?.id === 'coinbaseWalletSDK';
   const isWrongNetwork = isConnected && chain?.id !== baseSepolia.id;
 
-  const handleConnect = () => {
-    const connector = connectors[0];
-    if (connector) {
-      connect({ connector, chainId: baseSepolia.id });
-    }
+  const handleConnect = (selectedConnector) => {
+    connect({ connector: selectedConnector, chainId: baseSepolia.id });
   };
 
   const handleSwitchNetwork = () => {
@@ -39,17 +43,43 @@ export default function WalletConnect() {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
   };
 
-  // Not connected
+  // Not connected - Show dropdown with wallet options
   if (!isConnected) {
     return (
-      <Button 
-        onClick={handleConnect}
-        disabled={isPending}
-        className="gap-2"
-      >
-        <Wallet className="w-4 h-4" />
-        {isPending ? 'Connecting...' : 'Connect Wallet'}
-      </Button>
+      <div className="flex flex-col items-end gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              disabled={isPending}
+              className="gap-2"
+            >
+              <Wallet className="w-4 h-4" />
+              {isPending ? 'Connecting...' : 'Connect Wallet'}
+              <ChevronDown className="w-4 h-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-64">
+            {connectors.map((connectorOption) => (
+              <DropdownMenuItem
+                key={connectorOption.id}
+                onClick={() => handleConnect(connectorOption)}
+                className="flex items-center gap-2 cursor-pointer py-3"
+              >
+                <Wallet className="w-4 h-4" />
+                <div className="flex-1">
+                  <div className="font-medium">{connectorOption.name}</div>
+                  {connectorOption.id === 'coinbaseWalletSDK' && (
+                    <div className="flex items-center gap-1 text-xs text-green-600">
+                      <Zap className="w-3 h-3" />
+                      Gasless transactions enabled
+                    </div>
+                  )}
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     );
   }
 
@@ -80,6 +110,14 @@ export default function WalletConnect() {
         <CheckCircle className="w-4 h-4 text-green-500" />
         <span className="text-sm font-medium text-green-500">Base Sepolia</span>
       </div>
+
+      {/* Smart Wallet Badge */}
+      {isSmartWallet && (
+        <div className="hidden lg:flex items-center gap-1 px-2 py-1 rounded-md bg-blue-500/10 border border-blue-500/20">
+          <Zap className="w-3 h-3 text-blue-500" />
+          <span className="text-xs font-medium text-blue-500">Gasless</span>
+        </div>
+      )}
 
       {/* Balances */}
       <div className="hidden lg:flex flex-col items-end gap-0.5">

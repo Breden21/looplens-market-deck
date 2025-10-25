@@ -26,5 +26,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "../looplens-ai-agent/src/aiAgent.ts", "../looplens-ai-agent/src/dataFetcher.ts", "../looplens-ai-agent/src/marketGenerator.ts", "../looplens-ai-agent/src/index.ts"]
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/Header";
 import { MarketCard } from "@/components/MarketCard";
@@ -10,13 +10,7 @@ import { AIPerformance } from "@/components/AIPerformance";
 import { ResolvedMarkets } from "@/components/ResolvedMarkets";
 import { Button } from "@/components/ui/button";
 import { BarChart3, TrendingUp } from "lucide-react";
-import { 
-  Market, 
-  ResolvedMarket, 
-  generateInitialMarkets, 
-  generateMarket, 
-  resolveMarket 
-} from "@/lib/marketGenerator";
+import { useBlockchainMarkets } from "@/hooks/useBlockchainMarkets";
 
 interface Bet {
   marketId: string;
@@ -29,48 +23,14 @@ interface Bet {
 
 const Index = () => {
   const [activeView, setActiveView] = useState<"markets" | "results">("markets");
-  const [markets, setMarkets] = useState<Market[]>(() => generateInitialMarkets(5));
-  const [resolvedMarkets, setResolvedMarkets] = useState<ResolvedMarket[]>([]);
-  const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
+  const { markets, refetch } = useBlockchainMarkets(); // Use real blockchain markets
+  const [selectedMarket, setSelectedMarket] = useState<any | null>(null);
   const [betWith, setBetWith] = useState(true);
   const [activeBets, setActiveBets] = useState<Bet[]>([]);
-
-  // Auto-generate new markets every 60 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const newMarket = generateMarket();
-      setMarkets((prev) => [...prev, newMarket]);
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Check for expired markets and resolve them
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      setMarkets((prev) => {
-        const active: Market[] = [];
-        const expired: Market[] = [];
-
-        prev.forEach((market) => {
-          if (market.endsAt <= now) expired.push(market);
-          else active.push(market);
-        });
-
-        if (expired.length > 0) {
-          const newResolved = expired.map((market) => resolveMarket(market));
-          setResolvedMarkets((prevResolved) => [...newResolved, ...prevResolved]);
-        }
-
-        return active;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const [resolvedMarkets, setResolvedMarkets] = useState<any[]>([]);
 
   const handleBet = (marketId: string, betWithAI: boolean) => {
-    const market = markets.find((m) => m.id === marketId);
+    const market = markets.find((m) => m.id.toString() === marketId);
     if (market) {
       setSelectedMarket(market);
       setBetWith(betWithAI);
@@ -78,7 +38,7 @@ const Index = () => {
   };
 
   const handleBetPlaced = (bet: { marketId: string; amount: number; betWith: boolean; timestamp: Date }) => {
-    const market = markets.find((m) => m.id === bet.marketId);
+    const market = markets.find((m) => m.id.toString() === bet.marketId);
     if (market) {
       setActiveBets((prev) => [
         {
@@ -88,10 +48,12 @@ const Index = () => {
         },
         ...prev,
       ]);
+      // Refetch markets to update totals
+      refetch();
     }
   };
 
-  const totalVolume = resolvedMarkets.reduce((sum, m) => sum + m.totalVolume, 0);
+  const totalVolume = resolvedMarkets.reduce((sum, m) => sum + (m.totalVolume || 0), 0);
   const aiWins = resolvedMarkets.filter((m) => m.aiWon).length;
   const aiWinRate = resolvedMarkets.length > 0 ? (aiWins / resolvedMarkets.length) * 100 : 73;
   const avgConfidence = markets.length > 0 
@@ -144,13 +106,18 @@ const Index = () => {
                 <div className="space-y-2">
                   <h2 className="text-3xl font-bold text-foreground">Live Markets</h2>
                   <p className="text-muted-foreground">
-                    AI-powered prediction markets on Base. Bet with or against the AI.
+                    AI-powered prediction markets on Base Sepolia. Bet with or against the AI.
                   </p>
                 </div>
 
                 {markets.length === 0 ? (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <p>Waiting for new markets to generate...</p>
+                  <div className="text-center py-12 space-y-4">
+                    <p className="text-muted-foreground">
+                      No active markets yet. Check back soon!
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Connected to Base Sepolia - Real blockchain markets will appear here.
+                    </p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -162,7 +129,7 @@ const Index = () => {
                         transition={{ delay: index * 0.05 }}
                       >
                         <MarketCard
-                          id={market.id}
+                          id={market.id.toString()}
                           title={market.title}
                           aiConfidence={market.aiConfidence}
                           endsAt={market.endsAt}
@@ -202,7 +169,7 @@ const Index = () => {
         <BetModal
           isOpen={!!selectedMarket}
           onClose={() => setSelectedMarket(null)}
-          marketId={selectedMarket.id}
+          marketId={selectedMarket.id.toString()}
           marketTitle={selectedMarket.title}
           betWith={betWith}
           aiConfidence={selectedMarket.aiConfidence}
