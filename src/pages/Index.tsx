@@ -61,10 +61,35 @@ const Index = () => {
     : 65;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#0A0A0F] bg-gradient-to-b from-[#0A0A0F] to-[#1A1A2E] relative overflow-hidden">
+      {/* Floating abstract shapes */}
+      <div className="absolute top-20 left-10 w-64 h-64 bg-primary/20 rounded-full blur-3xl animate-float" />
+      <div className="absolute top-40 right-20 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }} />
+      <div className="absolute bottom-20 left-1/3 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s' }} />
+      
       <Header />
 
-      <main className="container mx-auto px-4 py-8 space-y-8">
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-16 text-center relative z-10">
+        <motion.h1 
+          className="text-6xl md:text-8xl font-black gradient-text mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          LoopLens
+        </motion.h1>
+        <motion.p 
+          className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          AI-powered prediction markets on Base. Bet with or against the AI.
+        </motion.p>
+      </section>
+
+      <main className="container mx-auto px-4 py-8 space-y-8 relative z-10">
         <SummaryStats 
           aiWinRate={aiWinRate} 
           activeMarkets={markets.length} 
@@ -126,7 +151,11 @@ const Index = () => {
                         key={market.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
+                        transition={{ 
+                          delay: index * 0.1,
+                          duration: 0.4,
+                          ease: "easeOut"
+                        }}
                       >
                         <MarketCard
                           id={market.id.toString()}

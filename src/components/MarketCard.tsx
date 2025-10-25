@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Clock } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface MarketCardProps {
   id: string;
@@ -41,58 +42,101 @@ export const MarketCard = ({ id, title, aiConfidence, endsAt, onBet }: MarketCar
   const payoutOddsFor = (100 / aiConfidence).toFixed(2);
   const payoutOddsAgainst = (100 / (100 - aiConfidence)).toFixed(2);
 
+  // Calculate circle progress
+  const radius = 45;
+  const circumference = 2 * Math.PI * radius;
+  const progress = (aiConfidence / 100) * circumference;
+
   return (
-    <Card className="p-6 space-y-4 hover:shadow-lg transition-all duration-300 border-border">
-      <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-card-foreground line-clamp-2">
-          {title}
-        </h3>
+    <motion.div
+      whileHover={{ y: -8 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+    >
+      <Card className="group relative p-6 space-y-4 card-glow card-glow-hover transition-all duration-300 overflow-hidden">
+        {/* Shimmer effect */}
+        <div className="shimmer absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none" />
         
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Clock className="w-4 h-4" />
-          <span className="font-medium">{timeLeft}</span>
-        </div>
-      </div>
-
-      <div className="space-y-3 py-4 border-y border-border">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">AI Confidence</span>
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${aiConfidence >= 60 ? 'bg-success' : aiConfidence >= 40 ? 'bg-primary' : 'bg-destructive'}`} />
-            <span className="text-lg font-bold text-primary">{aiConfidence}%</span>
+        <div className="space-y-3">
+          <h3 className="text-lg font-semibold text-foreground line-clamp-2">
+            {title}
+          </h3>
+          
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Clock className="w-4 h-4" />
+            <span className="font-medium">{timeLeft}</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="space-y-1">
+        {/* Animated Circular Progress Bar */}
+        <div className="flex items-center justify-center py-6">
+          <div className="relative w-32 h-32">
+            <svg className="transform -rotate-90 w-32 h-32">
+              {/* Background circle */}
+              <circle
+                cx="64"
+                cy="64"
+                r={radius}
+                stroke="currentColor"
+                strokeWidth="8"
+                fill="none"
+                className="text-muted/20"
+              />
+              {/* Progress circle with gradient */}
+              <defs>
+                <linearGradient id={`gradient-${id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="hsl(270 100% 65%)" />
+                  <stop offset="100%" stopColor="hsl(180 100% 60%)" />
+                </linearGradient>
+              </defs>
+              <motion.circle
+                cx="64"
+                cy="64"
+                r={radius}
+                stroke={`url(#gradient-${id})`}
+                strokeWidth="8"
+                fill="none"
+                strokeLinecap="round"
+                initial={{ strokeDasharray: `0 ${circumference}` }}
+                animate={{ strokeDasharray: `${progress} ${circumference}` }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="drop-shadow-[0_0_8px_rgba(168,85,247,0.6)]"
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-3xl font-bold gradient-text">{aiConfidence}%</span>
+              <span className="text-xs text-muted-foreground">AI Confidence</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 text-sm py-3">
+          <div className="space-y-1 text-center">
             <p className="text-muted-foreground">Payout (Yes)</p>
-            <p className="font-semibold text-success">{payoutOddsFor}x</p>
+            <p className="font-semibold text-success text-lg">{payoutOddsFor}x</p>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 text-center">
             <p className="text-muted-foreground">Payout (No)</p>
-            <p className="font-semibold text-destructive">{payoutOddsAgainst}x</p>
+            <p className="font-semibold text-destructive text-lg">{payoutOddsAgainst}x</p>
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-3 pt-2">
-        <Button
-          onClick={() => onBet(id, true)}
-          variant="default"
-          className="w-full gap-2"
-        >
-          <TrendingUp className="w-4 h-4" />
-          Bet With AI
-        </Button>
-        <Button
-          onClick={() => onBet(id, false)}
-          variant="outline"
-          className="w-full gap-2 border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
-        >
-          <TrendingDown className="w-4 h-4" />
-          Bet Against
-        </Button>
-      </div>
-    </Card>
+        <div className="grid grid-cols-2 gap-3 pt-2">
+          <Button
+            onClick={() => onBet(id, true)}
+            className="w-full gap-2 bg-success hover:bg-success/90 text-white button-glow-green transition-all duration-300"
+          >
+            <TrendingUp className="w-4 h-4" />
+            Bet With AI
+          </Button>
+          <Button
+            onClick={() => onBet(id, false)}
+            className="w-full gap-2 bg-destructive hover:bg-destructive/90 text-white button-glow-red transition-all duration-300"
+          >
+            <TrendingDown className="w-4 h-4" />
+            Bet Against
+          </Button>
+        </div>
+      </Card>
+    </motion.div>
   );
 };

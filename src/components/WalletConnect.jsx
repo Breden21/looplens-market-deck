@@ -1,14 +1,9 @@
 import { useAccount, useConnect, useDisconnect, useSwitchChain, useBalance } from 'wagmi';
 import { baseSepolia } from 'wagmi/chains';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Wallet, AlertCircle, CheckCircle, Zap, ChevronDown } from 'lucide-react';
+import { Wallet, AlertCircle, CheckCircle, LogOut } from 'lucide-react';
 import { CONTRACTS } from '@/config/contracts';
+import { motion } from 'framer-motion';
 
 export default function WalletConnect() {
   const { address, isConnected, chain, connector } = useAccount();
@@ -46,40 +41,14 @@ export default function WalletConnect() {
   // Not connected - Show dropdown with wallet options
   if (!isConnected) {
     return (
-      <div className="flex flex-col items-end gap-2">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              disabled={isPending}
-              className="gap-2"
-            >
-              <Wallet className="w-4 h-4" />
-              {isPending ? 'Connecting...' : 'Connect Wallet'}
-              <ChevronDown className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-64">
-            {connectors.map((connectorOption) => (
-              <DropdownMenuItem
-                key={connectorOption.id}
-                onClick={() => handleConnect(connectorOption)}
-                className="flex items-center gap-2 cursor-pointer py-3"
-              >
-                <Wallet className="w-4 h-4" />
-                <div className="flex-1">
-                  <div className="font-medium">{connectorOption.name}</div>
-                  {connectorOption.id === 'coinbaseWalletSDK' && (
-                    <div className="flex items-center gap-1 text-xs text-green-600">
-                      <Zap className="w-3 h-3" />
-                      Gasless transactions enabled
-                    </div>
-                  )}
-                </div>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <Button 
+        onClick={handleConnect}
+        disabled={isPending}
+        className="gap-2"
+      >
+        <Wallet className="w-4 h-4" />
+        {isPending ? 'Connecting...' : 'Connect Wallet'}
+      </Button>
     );
   }
 
@@ -111,39 +80,46 @@ export default function WalletConnect() {
         <span className="text-sm font-medium text-green-500">Base Sepolia</span>
       </div>
 
-      {/* Smart Wallet Badge */}
-      {isSmartWallet && (
-        <div className="hidden lg:flex items-center gap-1 px-2 py-1 rounded-md bg-blue-500/10 border border-blue-500/20">
-          <Zap className="w-3 h-3 text-blue-500" />
-          <span className="text-xs font-medium text-blue-500">Gasless</span>
-        </div>
-      )}
-
       {/* Balances */}
       <div className="hidden lg:flex flex-col items-end gap-0.5">
         <div className="text-xs text-muted-foreground">
           {ethBalance ? `${parseFloat(ethBalance.formatted).toFixed(4)} ETH` : '0 ETH'}
         </div>
-        <div className="text-xs font-medium">
-          {usdcBalance ? `${parseFloat(usdcBalance.formatted).toFixed(2)} USDC` : '0 USDC'}
-        </div>
-      </div>
 
-      {/* Wallet Address & Disconnect */}
-      <div className="flex items-center gap-2">
-        <div className="px-3 py-1.5 rounded-lg bg-primary/10 border border-primary/20">
-          <span className="text-sm font-medium text-primary">
+        {/* Divider */}
+        <div className="w-px h-6 bg-border/50 hidden md:block" />
+
+        {/* Balances */}
+        <div className="hidden lg:flex items-center gap-3 text-xs">
+          <span className="text-muted-foreground">
+            {ethBalance ? `${parseFloat(ethBalance.formatted).toFixed(3)} ETH` : '0 ETH'}
+          </span>
+          <span className="font-semibold gradient-text">
+            {usdcBalance ? `${parseFloat(usdcBalance.formatted).toFixed(2)} USDC` : '0 USDC'}
+          </span>
+        </div>
+
+        {/* Divider */}
+        <div className="w-px h-6 bg-border/50" />
+
+        {/* Wallet Address */}
+        <div className="flex items-center gap-2">
+          <Wallet className="w-3.5 h-3.5 text-primary" />
+          <span className="text-sm font-medium gradient-text">
             {formatAddress(address)}
           </span>
         </div>
-        <Button
-          onClick={() => disconnect()}
-          variant="ghost"
-          size="sm"
-        >
-          Disconnect
-        </Button>
       </div>
-    </div>
+
+      {/* Disconnect Button */}
+      <Button
+        onClick={() => disconnect()}
+        variant="ghost"
+        size="icon"
+        className="h-9 w-9 hover:bg-destructive/20 hover:text-destructive transition-all"
+      >
+        <LogOut className="w-4 h-4" />
+      </Button>
+    </motion.div>
   );
 }
