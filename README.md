@@ -1,73 +1,59 @@
-# Welcome to your Lovable project
+# LoopLens - Frontend
 
-## Project info
+AI-powered prediction markets on Base where users bet with or against AI predictions.
 
-**URL**: https://lovable.dev/projects/1e8c390c-85ea-436d-9d4c-f80c0d457c2a
+## 🌐 Live Demo
 
-## How can I edit this code?
+**Production:** [https://looplens-market-deck.vercel.app](https://looplens-market-deck.vercel.app)
 
-There are several ways of editing your application.
+## 🎯 Features
 
-**Use Lovable**
+- ✅ Real-time blockchain market data
+- ✅ Coinbase Smart Wallet (gasless transactions)
+- ✅ MetaMask support (traditional wallet)
+- ✅ Dynamic AI confidence indicators (55-88%)
+- ✅ Responsive design
+- ✅ Market countdown timers
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/1e8c390c-85ea-436d-9d4c-f80c0d457c2a) and start prompting.
+## 🛠 Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- React 18 + TypeScript
+- Vite
+- Wagmi v2 (Web3 integration)
+- TailwindCSS + Shadcn/ui
+- Framer Motion (animations)
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## 🚀 Local Development
+```bash
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Visit http://localhost:5173
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📦 Build
+```bash
+npm run build
+```
 
-**Use GitHub Codespaces**
+## 🔗 Related Repos
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- Smart Contracts: [looplens-contracts](https://github.com/Breden21/looplens-contracts)
+- AI Agent: [looplens-ai-agent](https://github.com/Breden21/looplens-ai-agent)
 
-## What technologies are used for this project?
+## 📝 Contract Addresses (Base Sepolia)
 
-This project is built with:
+- PredictionMarket: `0xb69477DBeB7C0CD962D88D25024F1e4f6FCD3a99`
+- USDC: `0x036CbD53842c5426634e7929541eC2318f3dCF7e`
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🌟 Key Components
 
-## How can I deploy this project?
+- `useBlockchainMarkets` - Fetches markets from blockchain
+- `useBetting` - Handles USDC approval and betting
+- `WalletConnect` - Multi-wallet connection
+- `BetModal` - Betting interface
 
-Simply open [Lovable](https://lovable.dev/projects/1e8c390c-85ea-436d-9d4c-f80c0d457c2a) and click on Share -> Publish.
+## 📄 License
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
+MIT
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
